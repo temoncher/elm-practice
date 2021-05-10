@@ -17,8 +17,8 @@ smileyfaceSrc =
 
 
 feed =
-    [ { title = "Elm is fun!", description = "Elm", body = "I've really..." }
-    , { title = "Who says undefined isn't a function anyway?", description = "Fun", body = "..." }
-    , { title = "This compiler is pretty neat", description = "Elm", body = "..." }
-    , { title = "Are dragons real?", description = "dragons", body = "..." }
+    [ { title = "Elm is fun!", description = "Elm", body = "I've really...", tags = ["elm", "programming", "fun"] }
+    , { title = "Who says undefined isn't a function anyway?", description = "Fun", body = "...", tags = ["programming", "fun"] }
+    , { title = "This compiler is pretty neat", description = "Elm", body = "...", tags = ["elm", "fun"] }
+    , { title = "Are dragons real?", description = "dragons", body = "...", tags = ["dragons"] }
     ]

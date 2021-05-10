@@ -5,6 +5,7 @@ import Constants
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
+import Element.Events exposing (onClick)
 import Element.Font as Font
 import Html exposing (Html)
 import Html.Attributes
@@ -21,7 +22,7 @@ import Theme.Spacing
 
 initialModel =
     { tags = Constants.hardcodedTags
-    , slectedTag = "elm"
+    , selectedTag = "elm"
     , allArticles = Constants.feed
     }
 
@@ -31,7 +32,11 @@ initialModel =
 
 
 update msg model =
-    model
+    if msg.description == "ClickedTag" then
+        { model | selectedTag = msg.data }
+
+    else
+        model
 
 
 
@@ -109,8 +114,15 @@ viewBanner =
         ]
 
 
-viewTag : String -> Element msg
-viewTag name =
+viewTag props =
+    let
+        tagColor =
+            if props.isSelected then
+                Theme.Colors.primary
+
+            else
+                Theme.Colors.grayShade
+    in
     el
         [ paddingEach
             { top = 0
@@ -123,12 +135,13 @@ viewTag name =
         el
             [ paddingXY Theme.Spacing.md Theme.Spacing.sm
             , Border.rounded Theme.Spacing.xl
-            , Background.color Theme.Colors.grayShade
+            , Background.color tagColor
             , Font.color Theme.Colors.primaryContrast
             , Font.size Theme.FontSize.md
+            , onClick { description = "ClickedTag", data = props.name }
             ]
         <|
-            text name
+            text props.name
 
 
 viewTags model =
@@ -149,7 +162,7 @@ viewTags model =
             , Font.size <| Theme.FontSize.lg
             ]
             [ text "Popular tags" ]
-        , wrappedRow [] (List.map viewTag model.tags)
+        , wrappedRow [] (List.map (\tag -> viewTag { name = tag, isSelected = tag == model.selectedTag }) model.tags)
         ]
 
 
@@ -238,7 +251,7 @@ viewArticle article =
 viewContent model =
     let
         articles =
-            List.filter (\x -> True) model.allArticles
+            List.filter (\article -> List.member model.selectedTag article.tags) model.allArticles
 
         feed =
             List.map viewArticle articles
