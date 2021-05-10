@@ -4,6 +4,7 @@ import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
+import Html exposing (Html)
 import StyleUtils exposing (rem)
 import Theme.Colors
 import Theme.FontSize
@@ -11,7 +12,18 @@ import Theme.Fonts
 import Theme.Spacing
 
 
-header =
+hardcodedTags : List String
+hardcodedTags =
+    [ "some", "random", "tags", "12", "123", "C'mon bruh", "some new tags" ]
+
+
+elmLogoSrc : String
+elmLogoSrc =
+    "https://aws1.discourse-cdn.com/standard17/uploads/elm_lang/original/1X/50a05e53677a2c3b47776d7abd0f113eb50193a1.png"
+
+
+viewHeader : Element msg
+viewHeader =
     row
         [ width <| px 1200
         , centerX
@@ -30,12 +42,14 @@ header =
         ]
 
 
-banner =
+viewBanner : Element msg
+viewBanner =
     row
         [ width fill
         , alignTop
         , Background.color <| Theme.Colors.primary
         , Font.color <| Theme.Colors.primaryContrast
+        -- Only second innerShadow works for now
         , Border.innerShadow
             { offset = ( 0, 8 )
             , size = -8
@@ -70,7 +84,7 @@ banner =
                 , image
                     [ width <| rem 2
                     ]
-                    { src = "https://aws1.discourse-cdn.com/standard17/uploads/elm_lang/original/1X/50a05e53677a2c3b47776d7abd0f113eb50193a1.png"
+                    { src = elmLogoSrc
                     , description = "elm logo"
                     }
                 , text " knowledge"
@@ -79,11 +93,8 @@ banner =
         ]
 
 
-tags =
-    [ "some", "random", "tags", "12", "123", "C'mon bruh", "some new tags" ]
-
-
-tag name =
+viewTag : String -> Element msg
+viewTag name =
     el
         [ paddingEach
             { top = 0
@@ -104,7 +115,8 @@ tag name =
             text name
 
 
-tagsContainer =
+viewTags : List String -> Element msg
+viewTags tags =
     column
         [ width fill
         , alignTop
@@ -122,11 +134,12 @@ tagsContainer =
             , Font.size <| Theme.FontSize.lg
             ]
             [ text "Popular tags" ]
-        , wrappedRow [] (List.map tag tags)
+        , wrappedRow [] (List.map viewTag tags)
         ]
 
 
-content =
+viewContent : Element msg
+viewContent =
     row
         [ width <| px 1200
         , height fill
@@ -137,26 +150,24 @@ content =
             [ width <| fillPortion 3
             , height fill
             ]
-            [ el
-                [ alignTop ]
-              <|
-                text "I'm the content"
+            [ el [ alignTop ] <| text "I'm the content"
             ]
         , column
             [ width <| fillPortion 1
             , height fill
             ]
-            [ tagsContainer ]
+            [ viewTags hardcodedTags ]
         ]
 
 
+main : Html msg
 main =
     layout [] <|
         column
             [ height fill
             , width fill
             ]
-            [ header
-            , banner
-            , content
+            [ viewHeader
+            , viewBanner
+            , viewContent
             ]
