@@ -22,7 +22,7 @@ import Theme.Spacing
 
 initialModel =
     { tags = Constants.hardcodedTags
-    , selectedTag = "elm"
+    , selectedTag = ""
     , allArticles = Constants.feed
     }
 
@@ -33,7 +33,15 @@ initialModel =
 
 update msg model =
     if msg.description == "ClickedTag" then
-        { model | selectedTag = msg.data }
+        let
+            newTagName =
+                if model.selectedTag /= msg.data then
+                    msg.data
+
+                else
+                    ""
+        in
+        { model | selectedTag = newTagName }
 
     else
         model
@@ -256,7 +264,7 @@ viewArticle article =
 viewContent model =
     let
         articles =
-            List.filter (\article -> List.member model.selectedTag article.tags) model.allArticles
+            List.filter (\article -> model.selectedTag == "" || List.member model.selectedTag article.tags) model.allArticles
 
         feed =
             List.map viewArticle articles
