@@ -16,12 +16,17 @@ import Theme.Fonts
 import Theme.Spacing
 
 
+type Tab
+    = GlobalFeed
+    | TagFeed String
+
+
 
 -- MODEL
 
 
 type alias Model =
-    { selectedTag : String
+    { currentTab : Tab
     , allArticles : List Article
     , tags : List String
     }
@@ -29,7 +34,7 @@ type alias Model =
 
 initialModel : Model
 initialModel =
-    { selectedTag = ""
+    { currentTab = GlobalFeed
     , allArticles = Constants.feed
     , tags = Constants.hardcodedTags
     }
@@ -39,27 +44,19 @@ initialModel =
 -- UPDATE
 
 
-type alias Msg =
-    { description : String
-    , data : String
-    }
+type Msg
+    = ClickedTag String
+    | ClickedTab Tab
 
 
 update : Msg -> Model -> Model
 update msg model =
-    if msg.description == "ClickedTag" then
-        let
-            newTagName =
-                if model.selectedTag /= msg.data then
-                    msg.data
+    case msg of
+        ClickedTag tagName ->
+            { model | currentTab = TagFeed tagName }
 
-                else
-                    ""
-        in
-        { model | selectedTag = newTagName }
-
-    else
-        model
+        ClickedTab tab ->
+            { model | currentTab = tab }
 
 
 
@@ -163,7 +160,7 @@ viewTag props =
             , Font.color Theme.Colors.primaryContrast
             , Font.size Theme.FontSize.md
             , pointer
-            , onClick { description = "ClickedTag", data = props.name }
+            , onClick (ClickedTag props.name)
             ]
         <|
             text props.name
@@ -188,7 +185,7 @@ viewTags model =
             , Font.size <| Theme.FontSize.lg
             ]
             [ text "Popular tags" ]
-        , wrappedRow [] (List.map (\tag -> viewTag { name = tag, isSelected = tag == model.selectedTag }) model.tags)
+        , wrappedRow [] (List.map (\tag -> viewTag { name = tag, isSelected = model.currentTab == TagFeed tag }) model.tags)
         ]
 
 
@@ -280,15 +277,79 @@ viewArticle article =
             ]
 
 
-viewContent : Model -> Element Msg
-viewContent model =
+viewTab : { name : String, isSelected : Bool, onTabClick : Msg } -> Element Msg
+viewTab { name, isSelected, onTabClick } =
+    let
+        tabColor =
+            if isSelected then
+                Theme.Colors.primary
+
+            else
+                Theme.Colors.grayTint
+    in
+    el
+        [ padding Theme.Spacing.lg
+        , Border.color tabColor
+        , Border.widthEach
+            { left = 0
+            , top = 0
+            , right = 0
+            , bottom =
+                if isSelected then
+                    Theme.Spacing.xs
+
+                else
+                    0
+            }
+        , Font.color tabColor
+        , Font.size Theme.FontSize.lg
+        , pointer
+        , onClick onTabClick
+        ]
+    <|
+        text name
+
+
+viewTabs : Model -> Element Msg
+viewTabs model =
+    let
+        activeTab =
+            case model.currentTab of
+                TagFeed tagName ->
+                    [ viewTab { name = "#" ++ tagName, isSelected = True, onTabClick = ClickedTab (TagFeed tagName) } ]
+
+                _ ->
+                    []
+    in
+    row []
+        (viewTab { name = "Global feed", isSelected = model.currentTab == GlobalFeed, onTabClick = ClickedTab GlobalFeed }
+            :: activeTab
+        )
+
+
+viewFeed : Model -> List (Element Msg)
+viewFeed model =
     let
         articles =
-            List.filter (\article -> model.selectedTag == "" || List.member model.selectedTag article.tags) model.allArticles
+            List.filter
+                (\article ->
+                    case model.currentTab of
+                        GlobalFeed ->
+                            True
+
+                        TagFeed tagName ->
+                            List.member tagName article.tags
+                )
+                model.allArticles
 
         feed =
             List.map viewArticle articles
     in
+    viewTabs model :: feed
+
+
+viewContent : Model -> Element Msg
+viewContent model =
     row
         [ width <| px 1200
         , height fill
@@ -300,7 +361,7 @@ viewContent model =
             , height fill
             , paddingXY Theme.Spacing.xl 0
             ]
-            feed
+            (viewFeed model)
         , column
             [ width <| fillPortion 1
             , height fill
