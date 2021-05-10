@@ -138,6 +138,7 @@ viewTag props =
             , Background.color tagColor
             , Font.color Theme.Colors.primaryContrast
             , Font.size Theme.FontSize.md
+            , pointer
             , onClick { description = "ClickedTag", data = props.name }
             ]
         <|
@@ -166,6 +167,38 @@ viewTags model =
         ]
 
 
+viewAuthor =
+    row
+        [ paddingEach
+            { left = 0
+            , top = 0
+            , right = 0
+            , bottom = Theme.Spacing.xl
+            }
+        ]
+        [ image
+            [ width <| rem 2
+            , Border.rounded Theme.Spacing.xxl
+            , htmlAttribute <| Html.Attributes.style "overflow" "hidden"
+            ]
+            { src = Constants.smileyfaceSrc
+            , description = "smileyface"
+            }
+        , column
+            [ paddingXY Theme.Spacing.md 0
+            ]
+            [ el [ Font.color Theme.Colors.primary ] <| text "Author name"
+            , el
+                [ Font.color Theme.Colors.grayTint
+                , Font.extraLight
+                , Font.size Theme.FontSize.md
+                ]
+              <|
+                text "Publication date"
+            ]
+        ]
+
+
 viewArticle article =
     el [ width fill ] <|
         column
@@ -180,35 +213,7 @@ viewArticle article =
                 , bottom = 0
                 }
             ]
-            [ row
-                [ paddingEach
-                    { left = 0
-                    , top = 0
-                    , right = 0
-                    , bottom = Theme.Spacing.xl
-                    }
-                ]
-                [ image
-                    [ width <| rem 2
-                    , Border.rounded Theme.Spacing.xxl
-                    , htmlAttribute <| Html.Attributes.style "overflow" "hidden"
-                    ]
-                    { src = Constants.smileyfaceSrc
-                    , description = "smileyface"
-                    }
-                , column
-                    [ paddingXY Theme.Spacing.md 0
-                    ]
-                    [ el [ Font.color Theme.Colors.primary ] <| text "Author name"
-                    , el
-                        [ Font.color Theme.Colors.grayTint
-                        , Font.extraLight
-                        , Font.size Theme.FontSize.md
-                        ]
-                      <|
-                        text "Publication date"
-                    ]
-                ]
+            [ viewAuthor
             , el
                 [ Font.size Theme.FontSize.xl
                 , paddingEach
