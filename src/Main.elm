@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Constants
+import Constants exposing (Article)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -20,10 +20,18 @@ import Theme.Spacing
 -- MODEL
 
 
+type alias Model =
+    { selectedTag : String
+    , allArticles : List Article
+    , tags : List String
+    }
+
+
+initialModel : Model
 initialModel =
-    { tags = Constants.hardcodedTags
-    , selectedTag = ""
+    { selectedTag = ""
     , allArticles = Constants.feed
+    , tags = Constants.hardcodedTags
     }
 
 
@@ -31,6 +39,13 @@ initialModel =
 -- UPDATE
 
 
+type alias Msg =
+    { description : String
+    , data : String
+    }
+
+
+update : Msg -> Model -> Model
 update msg model =
     if msg.description == "ClickedTag" then
         let
@@ -122,6 +137,7 @@ viewBanner =
         ]
 
 
+viewTag : { isSelected : Bool, name : String } -> Element Msg
 viewTag props =
     let
         tagColor =
@@ -153,6 +169,7 @@ viewTag props =
             text props.name
 
 
+viewTags : Model -> Element Msg
 viewTags model =
     column
         [ width fill
@@ -175,6 +192,7 @@ viewTags model =
         ]
 
 
+viewAuthor : Element msg
 viewAuthor =
     row
         [ paddingEach
@@ -207,6 +225,7 @@ viewAuthor =
         ]
 
 
+viewArticle : Article -> Element msg
 viewArticle article =
     el [ width fill ] <|
         column
@@ -261,6 +280,7 @@ viewArticle article =
             ]
 
 
+viewContent : Model -> Element Msg
 viewContent model =
     let
         articles =
@@ -290,6 +310,7 @@ viewContent model =
         ]
 
 
+viewMain : Model -> Html Msg
 viewMain model =
     layout [] <|
         column
@@ -302,6 +323,7 @@ viewMain model =
             ]
 
 
+main : Program () Model Msg
 main =
     Browser.sandbox
         { init = initialModel

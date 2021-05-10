@@ -1,5 +1,11 @@
 module Constants exposing (..)
 
+type alias Article =
+    { title : String
+    , tags : List String
+    , description : String
+    , body : String
+    }
 
 hardcodedTags : List String
 hardcodedTags =
@@ -15,7 +21,7 @@ smileyfaceSrc : String
 smileyfaceSrc =
     "https://static.productionready.io/images/smiley-cyrus.jpg"
 
-
+feed : List Article
 feed =
     [ { title = "Elm is fun!", description = "Elm", body = "I've really...", tags = ["elm", "programming", "fun"] }
     , { title = "Who says undefined isn't a function anyway?", description = "Fun", body = "...", tags = ["programming", "fun"] }
