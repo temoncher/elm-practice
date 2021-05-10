@@ -1,8 +1,8 @@
 module StyleUtils exposing (..)
 
 import Element exposing (px)
-import Theme
+import Theme.Spacing
 
 
 rem times =
-    px (Theme.fontSize * times)
+    px (Theme.Spacing.md * times)
